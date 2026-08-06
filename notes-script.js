@@ -1,5 +1,5 @@
 (function() {
-  // 1. Inject Styles dynamically into the page head
+  // 1. Inject CSS Styles
   const style = document.createElement('style');
   style.innerHTML = `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -70,7 +70,7 @@
   document.head.appendChild(style);
 
   // 2. Render Check-In Screen & Notes App HTML Layout
-  document.addEventListener("DOMContentLoaded", function() {
+  function renderPortal() {
     const rootDiv = document.querySelector('.portal-root');
     if (!rootDiv) return;
 
@@ -152,16 +152,23 @@
       <iframe name="hidden_gform" id="hidden_gform" style="display:none;"></iframe>
     `;
 
-    // Initialize check-in validation state
     if (localStorage.getItem("rgnul_notes_access") === "granted") {
-      document.getElementById("checkinScreen").style.display = "none";
-      document.getElementById("notesPortal").style.display = "block";
+      const cs = document.getElementById("checkinScreen");
+      const np = document.getElementById("notesPortal");
+      if (cs) cs.style.display = "none";
+      if (np) np.style.display = "block";
     }
 
-    document.getElementById("notesPortal").addEventListener('contextmenu', e => e.preventDefault());
-  });
+    const portal = document.getElementById("notesPortal");
+    if (portal) portal.addEventListener('contextmenu', e => e.preventDefault());
+  }
 
-  // Protection against copy/print hotkeys
+  if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", renderPortal);
+  } else {
+    renderPortal();
+  }
+
   document.addEventListener("keydown", function(e) {
     if ((e.ctrlKey || e.metaKey) && ['p', 'c', 'u', 'P', 'C', 'U'].includes(e.key)) {
       e.preventDefault();
